@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.util.List;
 
 @Data
@@ -28,7 +27,6 @@ public class CategoryDAO {
     @Column(name = "name", nullable = false, length = 125, unique = true)
     private String name;
 
-    @Transient
     @OneToMany(mappedBy = "categoryId", cascade = CascadeType.REMOVE)
     private List<ProductDAO> products;
 

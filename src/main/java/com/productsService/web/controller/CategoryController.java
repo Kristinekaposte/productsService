@@ -30,7 +30,7 @@ import java.util.Optional;
 @Api(tags = DescriptionVariables.CATEGORY)
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("api/v1/products")
+@RequestMapping("api/v1/category")
 @RestController
 public class CategoryController {
 
@@ -120,16 +120,10 @@ public class CategoryController {
         return ResponseEntity.ok(editedCategory);
     }
 
-
-
-
-    
-    //need to check if cascade delete works after adding Transient annotation on  private List<ProductDAO> products; in CategoryDAO
-
     @DeleteMapping("/delete/{id}")
     @ApiOperation(value = "Deletes Category entry by ID",
             notes = "Provide an id to delete specific Category from the database",
-            response = String.class)
+            response = Category.class) // BEFORE WAS String.class
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The request has succeeded"),
             @ApiResponse(code = 404, message = "The server has not found anything matching the Request-URI"),

@@ -6,10 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,4 +36,16 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         log.info("Seems like validation issue occurred");
         return ResponseEntity.status(status).body(errorResponse);
     }
+
+//    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+//    public ResponseEntity<Object> handleSQLIntegrityConstraintViolation(WebRequest request) {
+//        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+//        ErrorResponse errorResponse = new ErrorResponse(
+//                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+//                status.value(),
+//                status.getReasonPhrase(),
+//                "Constraint Violation, some fields require to insert existing data",
+//                request.getDescription(false));
+//        return ResponseEntity.status(status).body(errorResponse);
+//    }
 }

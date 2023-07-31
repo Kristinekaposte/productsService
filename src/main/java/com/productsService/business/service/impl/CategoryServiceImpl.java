@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Override
     public List<Category> getAllCategories() {
@@ -70,36 +70,22 @@ public class CategoryServiceImpl implements CategoryService {
             BeanUtils.copyProperties(UpdatedCategory, existingCategoryDAO, "id");
 
             Category updatedCategoryObject = categoryMapper.daoToCategory(categoryRepository.save(existingCategoryDAO));
+            log.info("Category entry with ID: {} updated", id);
             return updatedCategoryObject;
         } else
-            log.warn("Failed to save entry");
+            log.warn("Failed to update category. Category entry with ID: {} not found", id);
         return null;
     }
 
-    //    @Transactional
-//    @Override
-//    public Boolean deleteCategoryById(Long id) {
-//        if (isCategoryPresent(id)) {
-//            categoryRepository.deleteById(id);
-//            log.info("Category entry with id: {} is deleted", id);
-//            return true;
-//        } else
-//            log.warn("Category entry with id: {} does not exist, could not delete", id);
-//        return false;
-//    }
     @Transactional
     @Override
     public void deleteCategoryById(Long id) {
         Optional<CategoryDAO> optionalCategoryDAO = categoryRepository.findById(id);
-
-        if (optionalCategoryDAO.isPresent()) {
-            CategoryDAO category = optionalCategoryDAO.get();
-            List<ProductDAO> products = category.getProducts();
-            productRepository.deleteAll(products);
-            categoryRepository.delete(category);
-        } else {
-            log.warn("Some delete warning");
-        }
+        CategoryDAO category = optionalCategoryDAO.get();
+        List<ProductDAO> products = category.getProducts();
+        productRepository.deleteAll(products);
+        categoryRepository.delete(category);
+        log.info("Category with id: {} deleted successfully", id);
     }
 
     @Override
@@ -111,6 +97,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean isCategoryPresent(Long id) {
-        return categoryRepository.existsById(id);
+        boolean isCategoryPresent = categoryRepository.existsById(id);
+        log.info("is category id '{}' present in database: {}", id, isCategoryPresent);
+        return isCategoryPresent;
     }
 }
