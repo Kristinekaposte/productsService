@@ -50,7 +50,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.daoToProduct(productRepository.save(productMapper.productToDAO(product)));
     }
 
-
     @Override
     public Product editProduct(Long id, Product UpdatedProduct) {
         Optional<ProductDAO> optionalProductDAO = productRepository.findById(id);
@@ -66,8 +65,6 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
-
-
     @Override
     public void deleteProductById(Long id) {
             productRepository.deleteById(id);
@@ -76,9 +73,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean isProductPresent(Long id) {
-        return productRepository.existsById(id);
+       boolean isProductPresent = productRepository.existsById(id);
+        log.info("is product id '{}' present in database: {}", id, isProductPresent);
+        return isProductPresent;
     }
-
-
-
 }
