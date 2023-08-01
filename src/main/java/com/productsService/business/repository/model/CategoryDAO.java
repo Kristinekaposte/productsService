@@ -30,4 +30,8 @@ public class CategoryDAO {
     @OneToMany(mappedBy = "categoryId", cascade = CascadeType.REMOVE)
     private List<ProductDAO> products;
 
+    public CategoryDAO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

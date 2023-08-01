@@ -71,7 +71,7 @@ public class ProductServiceImplTest {
 
 
     @Test
-    void findProductById_Successful() {
+    public void findProductById_Successful() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(productDAO));
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
         Optional<Product> actualResult = productService.findProductById(1L);
@@ -82,7 +82,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void testFindProductById_NonExistingId_Failed() {
+    public void testFindProductById_NonExistingId_Failed() {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
         Optional<Product> result = productService.findProductById(99L);
         assertFalse(result.isPresent());
@@ -90,7 +90,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void saveProduct_Successful() {
+    public void saveProduct_Successful() {
         when(productMapper.productToDAO(product)).thenReturn(productDAO);
         when(productRepository.save(productDAO)).thenReturn(productDAO);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
@@ -125,13 +125,13 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void testDeleteProductById_Successful() {
+    public void testDeleteProductById_Successful() {
         productService.deleteProductById(1L);
         verify(productRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void testIsProductPresent_ProductExists_Successful() {
+    public void testIsProductPresent_ProductExists_Successful() {
         when(productRepository.existsById(1L)).thenReturn(true);
         boolean isPresent = productService.isProductPresent(1L);
         verify(productRepository, times(1)).existsById(1L);
@@ -139,7 +139,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void testIsProductPresent_ProductDoesNotExist_UnSuccessful() {
+    public void testIsProductPresent_ProductDoesNotExist_UnSuccessful() {
         when(productRepository.existsById(99L)).thenReturn(false);
         boolean isPresent = productService.isProductPresent(99L);
         verify(productRepository, times(1)).existsById(99L);

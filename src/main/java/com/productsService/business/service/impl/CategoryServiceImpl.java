@@ -83,7 +83,10 @@ public class CategoryServiceImpl implements CategoryService {
         Optional<CategoryDAO> optionalCategoryDAO = categoryRepository.findById(id);
         CategoryDAO category = optionalCategoryDAO.get();
         List<ProductDAO> products = category.getProducts();
-        productRepository.deleteAll(products);
+        if(products !=null){
+            log.info("Deleting products associated with Category ID: {}", products);
+            productRepository.deleteAll(products);
+        }
         categoryRepository.delete(category);
         log.info("Category with id: {} deleted successfully", id);
     }
