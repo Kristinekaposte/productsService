@@ -13,13 +13,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.request.WebRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,8 +40,6 @@ public class ProductControllerTest {
     private ProductService productService;
     @MockBean
     private CategoryService categoryService;
-    @MockBean
-    private WebRequest mockRequest;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -68,7 +66,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testGetAllProducts_Successful() throws Exception {
+    public void testGetAllProducts_Successful() throws Exception {
         when(productService.getAllProducts()).thenReturn(productList);
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -84,7 +82,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testFindAllProducts_WhenListEmpty_Successful() throws Exception {
+    public void testFindAllProducts_WhenListEmpty_Successful() throws Exception {
         when(productService.getAllProducts()).thenReturn(Collections.emptyList());
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -94,7 +92,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testGetProductById_ExistingId_Successful() throws Exception {
+    public void testGetProductById_ExistingId_Successful() throws Exception {
         when(productService.findProductById(1L)).thenReturn(Optional.of(product));
         mockMvc.perform(get(URL2 + "/1"))
                 .andExpect(status().isOk())
@@ -107,7 +105,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testGetProductById_NonExistingId_UnSuccessful() throws Exception {
+    public void testGetProductById_NonExistingId_UnSuccessful() throws Exception {
         when(productService.findProductById(99L)).thenReturn(Optional.empty());
         mockMvc.perform(get(URL2 + "/99"))
                 .andExpect(status().isNotFound())
@@ -116,7 +114,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testSaveProduct_Successful() throws Exception {
+    public void testSaveProduct_Successful() throws Exception {
         when(categoryService.isCategoryPresent(savedProduct.getCategoryId())).thenReturn(true);
         when(productService.saveProduct(any())).thenReturn(savedProduct);
         mockMvc.perform(post(URL3)
@@ -133,7 +131,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testSaveProduct_CategoryNotFound_UnSuccessful() throws Exception {
+    public void testSaveProduct_CategoryNotFound_UnSuccessful() throws Exception {
         when(categoryService.isCategoryPresent(99L)).thenReturn(false);
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +142,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
+    public void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
         Product productEmpty = new Product();
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -174,19 +172,31 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testEditProductById_CategoryNotFound() throws Exception {
+    public void testEditProductById_CategoryNotFound_Unsuccessful() throws Exception {
         when(categoryService.isCategoryPresent(updatedProduct.getCategoryId())).thenReturn(false);
-        mockMvc.perform(put(URL4 + "/99")
+        mockMvc.perform(put(URL4 + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedProduct)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Category not found with ID: " + updatedProduct.getCategoryId()));
         verify(categoryService, times(1)).isCategoryPresent(updatedProduct.getCategoryId());
-        verify(productService, never()).editProduct(99L, updatedProduct);
+        verify(productService, never()).editProduct(1L, updatedProduct);
+    }
+    @Test
+    public void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
+        Product invalidProduct = new Product();
+        mockMvc.perform(put(URL4 + "/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidProduct)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+        verify(productService, times(0)).editProduct(anyLong(), any());
     }
 
     @Test
-    void testDeleteProduct_Successful() throws Exception {
+    public void testDeleteProduct_Successful() throws Exception {
         when(productService.isProductPresent(1L)).thenReturn(true);
         mockMvc.perform(delete(URL5 + "/1"))
                 .andExpect(status().isOk())
@@ -195,7 +205,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void testDeleteProduct_ProductNotFound_Unsuccessful() throws Exception {
+    public void testDeleteProduct_ProductNotFound_Unsuccessful() throws Exception {
         when(productService.isProductPresent(99L)).thenReturn(false);
         mockMvc.perform(delete(URL5 + "/99"))
                 .andExpect(status().isNotFound())
