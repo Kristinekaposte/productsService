@@ -67,7 +67,7 @@ public class ProductController {
             @ApiResponse(code = 500, message = "Server error")})
 
     public ResponseEntity<Product> getProductById(@ApiParam(value = "id of the Product entry", required = true)
-                                                    @PathVariable("id") Long id) {
+                                                  @PathVariable("id") Long id) {
         Optional<Product> productOptional = productService.findProductById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
@@ -97,7 +97,6 @@ public class ProductController {
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
-
     @PutMapping("/edit/{id}")
     @ApiOperation(value = "Edits Product entry by ID",
             notes = "Provide an id to edit specific product in the database",
@@ -117,8 +116,6 @@ public class ProductController {
         log.info("Product with ID {} updated successfully.", id);
         return ResponseEntity.ok(editedProduct);
     }
-
-
 
     @DeleteMapping("/delete/{id}")
     @ApiOperation(value = "Deletes Product entry by ID",
