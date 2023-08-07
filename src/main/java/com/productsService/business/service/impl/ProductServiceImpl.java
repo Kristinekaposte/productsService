@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,11 +52,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product editProduct(Long id, Product UpdatedProduct) {
+    public Product editProduct(Long id, Product updatedProduct) {
         Optional<ProductDAO> optionalProductDAO = productRepository.findById(id);
         if (optionalProductDAO.isPresent()) {
             ProductDAO existingProductDAO = optionalProductDAO.get();
-            BeanUtils.copyProperties(UpdatedProduct, existingProductDAO, "id");
+            BeanUtils.copyProperties(updatedProduct, existingProductDAO, "id");
 
             Product updatedProductObject = productMapper.daoToProduct(productRepository.save(existingProductDAO));
             log.info("Product entry with ID: {} updated", id);
@@ -77,4 +78,17 @@ public class ProductServiceImpl implements ProductService {
         log.info("is product id '{}' present in database: {}", id, isProductPresent);
         return isProductPresent;
     }
+    @Override
+    public List<Long> findExistingProducts(List<Long> productIds) {
+        List<Long> existingProducts = new ArrayList<>();
+        for (Long productId : productIds) {
+            if (isProductPresent(productId)) {
+                existingProducts.add(productId);
+            }else {
+                log.warn("Product with id: {}, does not exist" +productIds);
+            }
+        }
+        return existingProducts;
+    }
+
 }

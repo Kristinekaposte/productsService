@@ -66,7 +66,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testGetAllProducts_Successful() throws Exception {
+     void testGetAllProducts_Successful() throws Exception {
         when(productService.getAllProducts()).thenReturn(productList);
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -82,7 +82,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testFindAllProducts_WhenListEmpty_Successful() throws Exception {
+     void testFindAllProducts_WhenListEmpty_Successful() throws Exception {
         when(productService.getAllProducts()).thenReturn(Collections.emptyList());
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -92,7 +92,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testGetProductById_ExistingId_Successful() throws Exception {
+     void testGetProductById_ExistingId_Successful() throws Exception {
         when(productService.findProductById(1L)).thenReturn(Optional.of(product));
         mockMvc.perform(get(URL2 + "/1"))
                 .andExpect(status().isOk())
@@ -105,7 +105,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testGetProductById_NonExistingId_UnSuccessful() throws Exception {
+     void testGetProductById_NonExistingId_UnSuccessful() throws Exception {
         when(productService.findProductById(99L)).thenReturn(Optional.empty());
         mockMvc.perform(get(URL2 + "/99"))
                 .andExpect(status().isNotFound())
@@ -114,7 +114,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testSaveProduct_Successful() throws Exception {
+     void testSaveProduct_Successful() throws Exception {
         when(categoryService.isCategoryPresent(savedProduct.getCategoryId())).thenReturn(true);
         when(productService.saveProduct(any())).thenReturn(savedProduct);
         mockMvc.perform(post(URL3)
@@ -131,7 +131,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testSaveProduct_CategoryNotFound_UnSuccessful() throws Exception {
+     void testSaveProduct_CategoryNotFound_UnSuccessful() throws Exception {
         when(categoryService.isCategoryPresent(99L)).thenReturn(false);
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -142,7 +142,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
+     void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
         Product productEmpty = new Product();
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -154,7 +154,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testEditProductById_Successful() throws Exception {
+     void testEditProductById_Successful() throws Exception {
         when(categoryService.isCategoryPresent(updatedProduct.getCategoryId())).thenReturn(true);
         when(productService.editProduct(1L, updatedProduct)).thenReturn(updatedProduct);
         mockMvc.perform(put(URL4 + "/1")
@@ -172,7 +172,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testEditProductById_CategoryNotFound_Unsuccessful() throws Exception {
+     void testEditProductById_CategoryNotFound_Unsuccessful() throws Exception {
         when(categoryService.isCategoryPresent(updatedProduct.getCategoryId())).thenReturn(false);
         mockMvc.perform(put(URL4 + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +183,7 @@ public class ProductControllerTest {
         verify(productService, never()).editProduct(1L, updatedProduct);
     }
     @Test
-    public void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
+     void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
         Product invalidProduct = new Product();
         mockMvc.perform(put(URL4 + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +196,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testDeleteProduct_Successful() throws Exception {
+     void testDeleteProduct_Successful() throws Exception {
         when(productService.isProductPresent(1L)).thenReturn(true);
         mockMvc.perform(delete(URL5 + "/1"))
                 .andExpect(status().isOk())
@@ -205,7 +205,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void testDeleteProduct_ProductNotFound_Unsuccessful() throws Exception {
+     void testDeleteProduct_ProductNotFound_Unsuccessful() throws Exception {
         when(productService.isProductPresent(99L)).thenReturn(false);
         mockMvc.perform(delete(URL5 + "/99"))
                 .andExpect(status().isNotFound())

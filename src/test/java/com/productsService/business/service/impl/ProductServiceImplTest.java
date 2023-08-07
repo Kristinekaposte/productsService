@@ -52,7 +52,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testGetAllProductsEntries_Successful() {
+     void testGetAllProductsEntries_Successful() {
         when(productRepository.findAll()).thenReturn(productDAOList);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
         List<Product> list = productService.getAllProducts();
@@ -62,7 +62,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testGetAllProducts_ListEmpty_Successful() {
+     void testGetAllProducts_ListEmpty_Successful() {
         when(productRepository.findAll()).thenReturn(Collections.emptyList());
         List<Product> result = productService.getAllProducts();
         verify(productRepository, times(1)).findAll();
@@ -71,7 +71,7 @@ public class ProductServiceImplTest {
 
 
     @Test
-    public void findProductById_Successful() {
+     void findProductById_Successful() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(productDAO));
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
         Optional<Product> actualResult = productService.findProductById(1L);
@@ -82,7 +82,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testFindProductById_NonExistingId_Failed() {
+     void testFindProductById_NonExistingId_Failed() {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
         Optional<Product> result = productService.findProductById(99L);
         assertFalse(result.isPresent());
@@ -90,7 +90,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void saveProduct_Successful() {
+     void saveProduct_Successful() {
         when(productMapper.productToDAO(product)).thenReturn(productDAO);
         when(productRepository.save(productDAO)).thenReturn(productDAO);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
@@ -102,7 +102,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testEditProductById_Successful() {
+     void testEditProductById_Successful() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(oldProductDAO));
         when(productRepository.save(oldProductDAO)).thenReturn(productDAO);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
@@ -115,7 +115,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testEditProductById_NonExistingId_Failed() {
+     void testEditProductById_NonExistingId_Failed() {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
         Product result = productService.editProduct(99L, product);
         assertNull(result);
@@ -125,13 +125,13 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testDeleteProductById_Successful() {
+     void testDeleteProductById_Successful() {
         productService.deleteProductById(1L);
         verify(productRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    public void testIsProductPresent_ProductExists_Successful() {
+     void testIsProductPresent_ProductExists_Successful() {
         when(productRepository.existsById(1L)).thenReturn(true);
         boolean isPresent = productService.isProductPresent(1L);
         verify(productRepository, times(1)).existsById(1L);
@@ -139,7 +139,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testIsProductPresent_ProductDoesNotExist_UnSuccessful() {
+     void testIsProductPresent_ProductDoesNotExist_UnSuccessful() {
         when(productRepository.existsById(99L)).thenReturn(false);
         boolean isPresent = productService.isProductPresent(99L);
         verify(productRepository, times(1)).existsById(99L);

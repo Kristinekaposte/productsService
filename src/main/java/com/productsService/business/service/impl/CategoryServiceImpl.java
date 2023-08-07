@@ -63,11 +63,11 @@ public class CategoryServiceImpl implements CategoryService {
      * if category not found it returns null
      */
     @Override
-    public Category editCategory(Long id, Category UpdatedCategory) {
+    public Category editCategory(Long id, Category updatedCategory) {
         Optional<CategoryDAO> optionalCategoryDAO = categoryRepository.findById(id);
         if (optionalCategoryDAO.isPresent()) {
             CategoryDAO existingCategoryDAO = optionalCategoryDAO.get();
-            BeanUtils.copyProperties(UpdatedCategory, existingCategoryDAO, "id");
+            BeanUtils.copyProperties(updatedCategory, existingCategoryDAO, "id");
 
             Category updatedCategoryObject = categoryMapper.daoToCategory(categoryRepository.save(existingCategoryDAO));
             log.info("Category entry with ID: {} updated", id);

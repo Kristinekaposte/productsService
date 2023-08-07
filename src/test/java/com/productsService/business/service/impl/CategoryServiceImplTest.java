@@ -6,15 +6,12 @@ import com.productsService.business.repository.ProductRepository;
 import com.productsService.business.repository.model.CategoryDAO;
 import com.productsService.business.repository.model.ProductDAO;
 import com.productsService.model.Category;
-import com.productsService.model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +62,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testGetAllCategoryEntries_Successful() {
+     void testGetAllCategoryEntries_Successful() {
         when(categoryRepository.findAll()).thenReturn(categoryDAOList);
         when(categoryMapper.daoToCategory(categoryDAO)).thenReturn(category);
         List<Category> list = categoryService.getAllCategories();
@@ -75,7 +72,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testGetAllCategory_ListEmpty_Successful() {
+     void testGetAllCategory_ListEmpty_Successful() {
         when(categoryRepository.findAll()).thenReturn(Collections.emptyList());
         List<Category> result = categoryService.getAllCategories();
         verify(categoryRepository, times(1)).findAll();
@@ -83,7 +80,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void findCategoryById_Successful() {
+     void findCategoryById_Successful() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryDAO));
         when(categoryMapper.daoToCategory(categoryDAO)).thenReturn(category);
         Optional<Category> actualResult = categoryService.findCategoryById(1L);
@@ -94,7 +91,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testFindCategoryById_NonExistingId_Failed() {
+     void testFindCategoryById_NonExistingId_Failed() {
         when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
         Optional<Category> result = categoryService.findCategoryById(99L);
         assertFalse(result.isPresent());
@@ -102,7 +99,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void saveCategory_Successful() {
+     void saveCategory_Successful() {
         when(categoryMapper.categoryToDAO(category)).thenReturn(categoryDAO);
         when(categoryRepository.save(categoryDAO)).thenReturn(categoryDAO);
         when(categoryMapper.daoToCategory(categoryDAO)).thenReturn(category);
@@ -114,7 +111,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testEditCategoryById_Successful() {
+     void testEditCategoryById_Successful() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(oldCategoryDAO));
         when(categoryRepository.save(oldCategoryDAO)).thenReturn(categoryDAO);
         when(categoryMapper.daoToCategory(categoryDAO)).thenReturn(category);
@@ -127,7 +124,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testEditCategoryById_NonExistingId_Failed() {
+     void testEditCategoryById_NonExistingId_Failed() {
         when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
         Category result = categoryService.editCategory(99L, category);
         assertNull(result);
@@ -137,14 +134,14 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testDeleteCategoryById_Successful_WithRelatedProducts() {
+     void testDeleteCategoryById_Successful_WithRelatedProducts() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryDAOWithRelatedProducts));
         categoryService.deleteCategoryById(1L);
         verify(productRepository, times(1)).deleteAll(categoryDAOWithRelatedProducts.getProducts());
         verify(categoryRepository, times(1)).delete(categoryDAOWithRelatedProducts);
     }
     @Test
-    public void testDeleteCategoryById_Successful_WithoutRelatedProducts() {
+     void testDeleteCategoryById_Successful_WithoutRelatedProducts() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryDAO));
         categoryService.deleteCategoryById(1L);
         verify(productRepository, never()).deleteAll(anyList());
@@ -154,7 +151,7 @@ public class CategoryServiceImplTest {
 
 
     @Test
-    public void testIsCategoryNameExisting_CategoryNameExists() {
+     void testIsCategoryNameExisting_CategoryNameExists() {
         when(categoryRepository.existsByName(category.getName())).thenReturn(true);
         boolean result = categoryService.isCategoryNameExisting(category.getName());
         assertTrue(result);
@@ -162,7 +159,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testIsCategoryNameExisting_CategoryNameDoesNotExist() {
+     void testIsCategoryNameExisting_CategoryNameDoesNotExist() {
         when(categoryRepository.existsByName(category.getName())).thenReturn(false);
         boolean result = categoryService.isCategoryNameExisting(category.getName());
         assertFalse(result);
@@ -170,7 +167,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testIsCategoryPresent_CategoryExists() {
+     void testIsCategoryPresent_CategoryExists() {
         when(categoryRepository.existsById(1L)).thenReturn(true);
         boolean result = categoryService.isCategoryPresent(1L);
         assertTrue(result);
@@ -178,7 +175,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testIsCategoryPresent_CategoryDoesNotExist() {
+     void testIsCategoryPresent_CategoryDoesNotExist() {
         when(categoryRepository.existsById(99L)).thenReturn(false);
         boolean result = categoryService.isCategoryPresent(99L);
         assertFalse(result);

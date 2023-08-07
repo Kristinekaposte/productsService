@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -135,4 +136,33 @@ public class ProductController {
         log.warn("Cannot delete Product entry with ID: {}, Product not found", id);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found with ID: " + id);
     }
+
+    /**
+     * --UNDER DEVELOPMENT--
+     * To return a list of available products, to we don't make multiple calls from Order Service to check it for all products
+     */
+
+    @GetMapping("/findExistingProducts")
+    @ApiOperation(value = "Find existing products",
+            notes = "Returns a list of existing product IDs based on the provided list of product IDs",
+            response = Product.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The request has succeeded"),
+            @ApiResponse(code = 404, message = "The server has not found anything matching the Request-URI"),
+            @ApiResponse(code = 500, message = "Server error")})
+    public ResponseEntity<List<Long>> findExistingProducts(@ApiParam(value = "List of product IDs", required = true)
+                                                           @RequestParam List<Long> productIds) {
+        List<Long> existingProducts = productService.findExistingProducts(productIds);
+        if (!existingProducts.isEmpty()) {
+            log.info("Found existing products: {}", existingProducts);
+            return ResponseEntity.status(HttpStatus.OK).body(existingProducts);
+        } else {
+            log.warn("No existing products found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).header(
+                    "Message", "No existing products found").build();
+        }
+    }
+
+
 }

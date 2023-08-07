@@ -26,6 +26,7 @@ public class Product {
     @NotBlank(message = "Product name cannot be null or blank")
     @Size(max = 125, message = "Product name length must not exceed 125 characters")
     private String name;
+
     @ApiModelProperty(notes = "The description of Product")
     private String description;
 

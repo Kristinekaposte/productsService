@@ -64,7 +64,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void testGetAllCategories_Successful() throws Exception {
+     void testGetAllCategories_Successful() throws Exception {
         when(categoryService.getAllCategories()).thenReturn(categoryList);
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -75,7 +75,7 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).getAllCategories();
     }
     @Test
-    public void testFindAllCategories_WhenListEmpty_Successful() throws Exception {
+     void testFindAllCategories_WhenListEmpty_Successful() throws Exception {
         when(categoryService.getAllCategories()).thenReturn(Collections.emptyList());
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).getAllCategories();
     }
     @Test
-    public void testGetCategoryById_ExistingId_Successful() throws Exception {
+     void testGetCategoryById_ExistingId_Successful() throws Exception {
         when(categoryService.findCategoryById(1L)).thenReturn(Optional.of(category));
         mockMvc.perform(get(URL2 + "/1"))
                 .andExpect(status().isOk())
@@ -94,7 +94,7 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).findCategoryById(1L);
     }
     @Test
-    public void testGetCategoryById_NonExistingId_UnSuccessful() throws Exception {
+     void testGetCategoryById_NonExistingId_UnSuccessful() throws Exception {
         when(categoryService.findCategoryById(99L)).thenReturn(Optional.empty());
         mockMvc.perform(get(URL2 + "/99"))
                 .andExpect(status().isNotFound())
@@ -129,7 +129,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
+     void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
         Category categoryEmpty = new Category();
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -182,7 +182,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
+     void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
         Category invalidCategory = new Category();
         mockMvc.perform(put(URL4 + "/1")
                         .contentType(MediaType.APPLICATION_JSON)

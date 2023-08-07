@@ -13,9 +13,11 @@ public interface ProductService {
 
     Product saveProduct(Product product);
 
-    Product editProduct(Long id, Product UpdatedProduct);
+    Product editProduct(Long id, Product updatedProduct);
 
     void deleteProductById(Long id);
 
     boolean isProductPresent(Long id);
+
+    List<Long> findExistingProducts(List<Long> productIds);
 }
