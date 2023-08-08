@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Api(tags = DescriptionVariables.PRODUCTS)
@@ -138,31 +139,30 @@ public class ProductController {
     }
 
     /**
-     * --UNDER DEVELOPMENT--
-     * To return a list of available products, to we don't make multiple calls from Order Service to check it for all products
+     * Retrieves a map of product IDs and their prices based on the list of product IDs which was provided from request.
+     *
+     * @param productIds List of product IDs - to get information.
+     * @return A ResponseEntity containing the productInfo map in the response body (with IDs and prices).
      */
 
-    @GetMapping("/findExistingProducts")
-    @ApiOperation(value = "Find existing products",
-            notes = "Returns a list of existing product IDs based on the provided list of product IDs",
-            response = Product.class,
-            responseContainer = "List")
+    @GetMapping("/getProductInfo")
+    @ApiOperation(value = "Get product information -  ID and price",
+            notes = "Gets the prices of products based on the provided list of product IDs",
+            response = Product.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The request has succeeded"),
             @ApiResponse(code = 404, message = "The server has not found anything matching the Request-URI"),
             @ApiResponse(code = 500, message = "Server error")})
-    public ResponseEntity<List<Long>> findExistingProducts(@ApiParam(value = "List of product IDs", required = true)
-                                                           @RequestParam List<Long> productIds) {
-        List<Long> existingProducts = productService.findExistingProducts(productIds);
-        if (!existingProducts.isEmpty()) {
-            log.info("Found existing products: {}", existingProducts);
-            return ResponseEntity.status(HttpStatus.OK).body(existingProducts);
-        } else {
-            log.warn("No existing products found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).header(
-                    "Message", "No existing products found").build();
+    public ResponseEntity<Map<Long, Double>> getProductInfo(@RequestParam List<Long> productIds) {
+        Map<Long, Double> productInfo = productService.getProductInfo(productIds);
+        if (!productInfo.isEmpty()) {
+            log.info("Found productInfo for {} products {}", productInfo.size(), productInfo.entrySet());
+            return ResponseEntity.status(HttpStatus.OK).body(productInfo);
         }
+        log.warn("No existing productInfo found for the provided product IDs: " + productIds);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).header(
+                "Message",
+                "No productInfo found for the provided product IDs: " + productIds + ". list size: " + productInfo.size()).build();
     }
-
 
 }

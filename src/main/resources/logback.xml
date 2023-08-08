@@ -11,7 +11,7 @@
             </Pattern>
         </layout>
     </appender>
-
+<!--RollingFileAppender will allow to view log messages in file from console during application runtime-->
     <appender name="RollingFile"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/spring-boot-logger.log</file>

@@ -10,8 +10,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -68,27 +69,35 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProductById(Long id) {
-            productRepository.deleteById(id);
-            log.info("Product entry with id: {} is deleted", id);
+        productRepository.deleteById(id);
+        log.info("Product entry with id: {} is deleted", id);
     }
 
     @Override
     public boolean isProductPresent(Long id) {
-       boolean isProductPresent = productRepository.existsById(id);
+        boolean isProductPresent = productRepository.existsById(id);
         log.info("is product id '{}' present in database: {}", id, isProductPresent);
         return isProductPresent;
     }
+
+    /**
+     * Gets the price of products based on their IDs from request.
+     *
+     * @param productIds List of productIds for which to get prices.
+     * @return Map containing productIds as keys and their price as value.
+     */
     @Override
-    public List<Long> findExistingProducts(List<Long> productIds) {
-        List<Long> existingProducts = new ArrayList<>();
+    public Map<Long, Double> getProductInfo(List<Long> productIds) {
+        Map<Long, Double> productInfo = new HashMap<>();
         for (Long productId : productIds) {
-            if (isProductPresent(productId)) {
-                existingProducts.add(productId);
-            }else {
-                log.warn("Product with id: {}, does not exist" +productIds);
+            ProductDAO productDAO = productRepository.findById(productId).orElse(null);
+            if (productDAO != null) {
+                Product product = productMapper.daoToProduct(productDAO);
+                productInfo.put(productId, product.getPrice());
             }
         }
-        return existingProducts;
+        log.info("Returning productInfo for these productIds: {}", productInfo.keySet());
+        return productInfo;
     }
 
 }
