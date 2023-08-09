@@ -12,8 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +55,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testGetAllProductsEntries_Successful() {
+    void testGetAllProductsEntries_Successful() {
         when(productRepository.findAll()).thenReturn(productDAOList);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
         List<Product> list = productService.getAllProducts();
@@ -62,7 +65,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testGetAllProducts_ListEmpty_Successful() {
+    void testGetAllProducts_ListEmpty_Successful() {
         when(productRepository.findAll()).thenReturn(Collections.emptyList());
         List<Product> result = productService.getAllProducts();
         verify(productRepository, times(1)).findAll();
@@ -71,7 +74,7 @@ public class ProductServiceImplTest {
 
 
     @Test
-     void findProductById_Successful() {
+    void findProductById_Successful() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(productDAO));
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
         Optional<Product> actualResult = productService.findProductById(1L);
@@ -82,7 +85,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testFindProductById_NonExistingId_Failed() {
+    void testFindProductById_NonExistingId_Failed() {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
         Optional<Product> result = productService.findProductById(99L);
         assertFalse(result.isPresent());
@@ -90,7 +93,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void saveProduct_Successful() {
+    void saveProduct_Successful() {
         when(productMapper.productToDAO(product)).thenReturn(productDAO);
         when(productRepository.save(productDAO)).thenReturn(productDAO);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
@@ -102,7 +105,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testEditProductById_Successful() {
+    void testEditProductById_Successful() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(oldProductDAO));
         when(productRepository.save(oldProductDAO)).thenReturn(productDAO);
         when(productMapper.daoToProduct(productDAO)).thenReturn(product);
@@ -115,7 +118,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testEditProductById_NonExistingId_Failed() {
+    void testEditProductById_NonExistingId_Failed() {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
         Product result = productService.editProduct(99L, product);
         assertNull(result);
@@ -125,13 +128,13 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testDeleteProductById_Successful() {
+    void testDeleteProductById_Successful() {
         productService.deleteProductById(1L);
         verify(productRepository, times(1)).deleteById(1L);
     }
 
     @Test
-     void testIsProductPresent_ProductExists_Successful() {
+    void testIsProductPresent_ProductExists_Successful() {
         when(productRepository.existsById(1L)).thenReturn(true);
         boolean isPresent = productService.isProductPresent(1L);
         verify(productRepository, times(1)).existsById(1L);
@@ -139,11 +142,22 @@ public class ProductServiceImplTest {
     }
 
     @Test
-     void testIsProductPresent_ProductDoesNotExist_UnSuccessful() {
+    void testIsProductPresent_ProductDoesNotExist_UnSuccessful() {
         when(productRepository.existsById(99L)).thenReturn(false);
         boolean isPresent = productService.isProductPresent(99L);
         verify(productRepository, times(1)).existsById(99L);
         assertFalse(isPresent);
+    }
+
+    @Test
+    void testGetProductInfo_Successful() {
+        List<Long> productIds = Arrays.asList(1L, 2L, 3L);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(productDAO));
+        when(productMapper.daoToProduct(productDAO)).thenReturn(product);
+        Map<Long, Double> expectedResult = new HashMap<>();
+        expectedResult.put(1L, 4.99);
+        Map<Long, Double> actualResult = productService.getProductInfo(productIds);
+        assertEquals(expectedResult, actualResult);
     }
 
     private ProductDAO createProductDAO() {

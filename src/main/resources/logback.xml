@@ -32,6 +32,9 @@
         </rollingPolicy>
     </appender>
 
+    <!-- Configure HikariCP log level -->
+    <logger name="com.zaxxer.hikari" level="WARN" />
+
     <!-- LOG everything at INFO level -->
     <root level="info">
         <appender-ref ref="RollingFile" />

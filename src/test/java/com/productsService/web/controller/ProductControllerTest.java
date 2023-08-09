@@ -13,10 +13,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -51,6 +56,7 @@ public class ProductControllerTest {
     public static final String URL3 = URL + "/save";
     public static final String URL4 = URL + "/edit";
     public static final String URL5 = URL + "/delete";
+    public static final String URL6 = URL + "/getProductInfo";
 
     private Product product;
     private List<Product> productList;
@@ -66,7 +72,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testGetAllProducts_Successful() throws Exception {
+    void testGetAllProducts_Successful() throws Exception {
         when(productService.getAllProducts()).thenReturn(productList);
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -82,7 +88,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testFindAllProducts_WhenListEmpty_Successful() throws Exception {
+    void testFindAllProducts_WhenListEmpty_Successful() throws Exception {
         when(productService.getAllProducts()).thenReturn(Collections.emptyList());
         mockMvc.perform(get(URL1))
                 .andExpect(status().isOk())
@@ -92,7 +98,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testGetProductById_ExistingId_Successful() throws Exception {
+    void testGetProductById_ExistingId_Successful() throws Exception {
         when(productService.findProductById(1L)).thenReturn(Optional.of(product));
         mockMvc.perform(get(URL2 + "/1"))
                 .andExpect(status().isOk())
@@ -105,7 +111,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testGetProductById_NonExistingId_UnSuccessful() throws Exception {
+    void testGetProductById_NonExistingId_UnSuccessful() throws Exception {
         when(productService.findProductById(99L)).thenReturn(Optional.empty());
         mockMvc.perform(get(URL2 + "/99"))
                 .andExpect(status().isNotFound())
@@ -114,7 +120,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testSaveProduct_Successful() throws Exception {
+    void testSaveProduct_Successful() throws Exception {
         when(categoryService.isCategoryPresent(savedProduct.getCategoryId())).thenReturn(true);
         when(productService.saveProduct(any())).thenReturn(savedProduct);
         mockMvc.perform(post(URL3)
@@ -131,7 +137,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testSaveProduct_CategoryNotFound_UnSuccessful() throws Exception {
+    void testSaveProduct_CategoryNotFound_UnSuccessful() throws Exception {
         when(categoryService.isCategoryPresent(99L)).thenReturn(false);
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -142,7 +148,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
+    void testSaveProduct_ValidationFailure_Unsuccessful() throws Exception {
         Product productEmpty = new Product();
         mockMvc.perform(post(URL3)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -154,7 +160,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testEditProductById_Successful() throws Exception {
+    void testEditProductById_Successful() throws Exception {
         when(categoryService.isCategoryPresent(updatedProduct.getCategoryId())).thenReturn(true);
         when(productService.editProduct(1L, updatedProduct)).thenReturn(updatedProduct);
         mockMvc.perform(put(URL4 + "/1")
@@ -172,7 +178,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testEditProductById_CategoryNotFound_Unsuccessful() throws Exception {
+    void testEditProductById_CategoryNotFound_Unsuccessful() throws Exception {
         when(categoryService.isCategoryPresent(updatedProduct.getCategoryId())).thenReturn(false);
         mockMvc.perform(put(URL4 + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -182,8 +188,9 @@ public class ProductControllerTest {
         verify(categoryService, times(1)).isCategoryPresent(updatedProduct.getCategoryId());
         verify(productService, never()).editProduct(1L, updatedProduct);
     }
+
     @Test
-     void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
+    void testEditProductById_ValidationFailure_Unsuccessful() throws Exception {
         Product invalidProduct = new Product();
         mockMvc.perform(put(URL4 + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +203,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testDeleteProduct_Successful() throws Exception {
+    void testDeleteProduct_Successful() throws Exception {
         when(productService.isProductPresent(1L)).thenReturn(true);
         mockMvc.perform(delete(URL5 + "/1"))
                 .andExpect(status().isOk())
@@ -205,7 +212,7 @@ public class ProductControllerTest {
     }
 
     @Test
-     void testDeleteProduct_ProductNotFound_Unsuccessful() throws Exception {
+    void testDeleteProduct_ProductNotFound_Unsuccessful() throws Exception {
         when(productService.isProductPresent(99L)).thenReturn(false);
         mockMvc.perform(delete(URL5 + "/99"))
                 .andExpect(status().isNotFound())
@@ -213,6 +220,33 @@ public class ProductControllerTest {
         verify(productService, never()).deleteProductById(99L);
     }
 
+    @Test
+    void testGetProductInfo_Successful() throws Exception {
+        List<Long> productIds = Arrays.asList(1L, 2L, 3L);
+        Map<Long, Double> productInfo = new HashMap<>();
+        productInfo.put(1L, 4.99);
+        productInfo.put(3L, 4.99);
+        when(productService.getProductInfo(productIds)).thenReturn(productInfo);
+        mockMvc.perform(get(URL6)
+                        .param("productIds", "1", "2", "3"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.1").value(4.99));
+        verify(productService, times(1)).getProductInfo(productIds);
+    }
+
+    @Test
+    void testGetProductInfo_NoProductsInfoFound_Unsuccessful() throws Exception {
+        List<Long> productIds = Arrays.asList(1L, 2L, 3L);
+        Map<Long, Double> emptyProductInfo = new HashMap<>();
+        when(productService.getProductInfo(productIds)).thenReturn(emptyProductInfo);
+        mockMvc.perform(get(URL6)
+                        .param("productIds", "1", "2", "3"))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string("Message", "No productInfo found for the provided product IDs: [1, 2, 3]. list size: 0"));
+        verify(productService, times(1)).getProductInfo(productIds);
+    }
 
     private Product createProduct() {
         return new Product(1L, "Radio new", "small new radio", 4.99, 4, 1L);
